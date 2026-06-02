@@ -1,0 +1,18 @@
+# Firewall drift state
+.mcp_firewall_state.json
+
+# Trained model (produced offline by train/train.py)
+/model/
+**/_checkpoints/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
