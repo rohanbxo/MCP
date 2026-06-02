@@ -100,7 +100,11 @@ def main() -> None:
     if not rows:
         raise SystemExit("No training data available.")
 
+    from datasets import ClassLabel
     ds = Dataset.from_list(rows).shuffle(seed=args.seed)
+    # Cast label to ClassLabel so stratified split works regardless of whether
+    # the source dataset stored labels as plain ints (Value) or ClassLabel.
+    ds = ds.cast_column("label", ClassLabel(names=["benign", "injection"]))
     split = ds.train_test_split(test_size=0.2, seed=args.seed, stratify_by_column="label")
     train_ds, eval_ds = split["train"], split["test"]
 
