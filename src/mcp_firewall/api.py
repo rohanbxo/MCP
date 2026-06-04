@@ -12,13 +12,18 @@ Run:  uvicorn mcp_firewall.api:app --host 0.0.0.0 --port 8000
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .detector import Detector, build_result
 from .ml_detector import MLDetector
 from .models import Channel, ScanResult
+
+_STATIC = Path(__file__).parent / "static"
 
 app = FastAPI(
     title="MCP Tool-Response Firewall",
@@ -26,6 +31,13 @@ app = FastAPI(
     "and tool poisoning.",
     version="0.1.0",
 )
+
+app.mount("/static", StaticFiles(directory=_STATIC), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def index() -> FileResponse:
+    return FileResponse(_STATIC / "index.html")
 
 # One shared Detector for the process. Model dir overridable via env.
 _MODEL_DIR = os.environ.get("MCP_FIREWALL_MODEL_DIR", "./model")
