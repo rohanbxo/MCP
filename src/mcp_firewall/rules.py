@@ -188,7 +188,8 @@ def r3_override_phrase(text: str, channel: Channel, source: str) -> list[Finding
 # --------------------------------------------------------------------------- #
 # R4 — exfiltration: external URL + an exfil verb in the same text
 # --------------------------------------------------------------------------- #
-_R4_URL = re.compile(r"https?://[^\s\"'<>)\]]+", re.IGNORECASE)
+# Match a URL but do not swallow trailing sentence punctuation (. , ; : ! ?).
+_R4_URL = re.compile(r"https?://[^\s\"'<>)\]]*[^\s\"'<>)\].,;:!?]", re.IGNORECASE)
 _R4_VERB = re.compile(
     r"\b(?:send|post|upload|exfiltrate|forward)\b", re.IGNORECASE
 )

@@ -76,7 +76,7 @@ firewall inspects both before the agent ever trusts them.
 Python **3.11+**.
 
 ```bash
-git clone https://github.com/rohanbxo/MCP.git && cd MCP
+git clone https://github.com/rohanbxo/mcp-firewall.git && cd mcp-firewall
 pip install -e ".[dev]"          # rules-only + test deps (no torch/transformers)
 # optional ML inference:  pip install -e ".[ml]"
 ```

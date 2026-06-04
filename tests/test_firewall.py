@@ -66,6 +66,28 @@ async def test_poisoned_server_blocks_on_both_channels(detector, tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_response_channel_detected_across_multiple_tools(detector, tmp_path):
+    """Runtime response detection should fire on more than one no-arg tool."""
+    result = await scan_server(
+        command=sys.executable,
+        args=[POISONED],
+        detector=detector,
+        state_path=_state(tmp_path),
+    )
+    response_findings = [f for f in result.findings if f.channel == "response"]
+    flagged_tools = {f.source for f in response_findings}
+    # get_status, changelog, and motd each carry a distinct response payload.
+    assert {"get_status", "changelog", "motd"} <= flagged_tools
+
+    response_detectors = {f.detector for f in response_findings}
+    # Distinct rules across the response channel: override phrase, shell sink,
+    # secret path, exfil.
+    assert "rule:R3_override_phrase" in response_detectors
+    assert "rule:R1_shell_sink" in response_detectors
+    assert "rule:R2_secret_path" in response_detectors
+
+
+@pytest.mark.asyncio
 async def test_poisoned_server_skips_arg_requiring_tools(detector, tmp_path):
     result = await scan_server(
         command=sys.executable,
